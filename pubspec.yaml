@@ -1,11 +1,11 @@
 name: current_app_detector
-description: A Flutter plugin to detect the current foreground app and navigate to home screen
+description: A Flutter plugin to detect the current foreground app and navigate to home screen. Provides getCurrentApp() and goHome() methods for Android.
 version: 1.0.0
-homepage:
+homepage: https://github.com/Shiva-04z/current_app_detector
+repository: https://github.com/Shiva-04z/current_app_detector
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=2.5.0"
+  sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
   flutter:
