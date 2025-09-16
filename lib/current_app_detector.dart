@@ -30,12 +30,32 @@ class CurrentAppDetector {
       }
     }
   }
+
+  /// Request usage stats permission
+  static Future<String> getUsagePermission() async {
+    try {
+      final result = await _channel.invokeMethod<String>('getUsagePermission');
+      return result ?? "unknown";
+    } on PlatformException catch (e) {
+      throw Exception('Failed to get usage permission: ${e.message}');
+    }
+  }
+
+  /// Check if usage stats permission is granted
+  static Future<bool> checkUsagePermission() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('checkUsagePermission');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to check usage permission: ${e.message}');
+    }
+  }
 }
-
-
 
 class CurrentAppDetectorPlugin {
   static void registerWith() {
     // No registration needed for V2 embedding
   }
 }
+
+

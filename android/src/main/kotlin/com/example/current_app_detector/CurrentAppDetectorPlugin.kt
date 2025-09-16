@@ -1,9 +1,11 @@
 package com.example.current_app_detector
 
+import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -30,6 +32,7 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             "goHome" -> goHome(result)
             "getCurrentApp" -> getCurrentApp(result)
             "getUsagePermission" -> getUsagePermission(result)
+            "checkUsagePermission" -> hasUsageStatsPermission(result)
             else -> result.notImplemented()
         }
     }
@@ -46,8 +49,8 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun getUsagePermission(result :Result){
-      try {
+    private fun getUsagePermission(result: Result) {
+        try {
             // Check current permission status
             val hasPermission = hasUsageStatsPermission()
             
@@ -65,22 +68,32 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
+    private fun hasUsageStatsPermission(result: Result) {
+        try {
+            val hasPermission = hasUsageStatsPermission()
+            result.success(hasPermission)
+        } catch (e: Exception) {
+            result.error("PERMISSION_CHECK_ERROR", "Failed to check permission: ${e.message}", null)
+        }
+    }
 
-     private fun hasUsageStatsPermission(): Boolean {
-        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as android.app.AppOpsManager
+    private fun hasUsageStatsPermission(): Boolean {
+        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         val mode = appOps.checkOpNoThrow(
-            android.app.AppOpsManager.OPSTR_GET_USAGE_STATS,
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
             android.os.Process.myUid(),
             context.packageName
         )
-        return mode == android.app.AppOpsManager.MODE_ALLOWED
+        return mode == AppOpsManager.MODE_ALLOWED
     }
-
-
-    
 
     private fun getCurrentApp(result: Result) {
         try {
+            if (!hasUsageStatsPermission()) {
+                result.error("PERMISSION_DENIED", "Usage stats permission required", null)
+                return
+            }
+            
             val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val endTime = System.currentTimeMillis()
             val beginTime = endTime - 10000 // check last 10 seconds
