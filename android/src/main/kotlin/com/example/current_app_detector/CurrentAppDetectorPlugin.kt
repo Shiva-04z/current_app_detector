@@ -29,6 +29,7 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
         when (call.method) {
             "goHome" -> goHome(result)
             "getCurrentApp" -> getCurrentApp(result)
+            "getUsagePermission" -> getUsagePermission(result)
             else -> result.notImplemented()
         }
     }
@@ -44,6 +45,39 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             result.error("GO_HOME_ERROR", "Failed to go home: ${e.message}", null)
         }
     }
+
+    private fun getUsagePermission(result :Result){
+      try {
+            // Check current permission status
+            val hasPermission = hasUsageStatsPermission()
+            
+            if (hasPermission) {
+                result.success("granted")
+            } else {
+                // Open the usage access settings screen
+                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+                result.success("need_permission")
+            }
+        } catch (e: Exception) {
+            result.error("PERMISSION_ERROR", "Failed to handle permission request: ${e.message}", null)
+        }
+    }
+
+
+     private fun hasUsageStatsPermission(): Boolean {
+        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as android.app.AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            android.app.AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            context.packageName
+        )
+        return mode == android.app.AppOpsManager.MODE_ALLOWED
+    }
+
+
+    
 
     private fun getCurrentApp(result: Result) {
         try {
