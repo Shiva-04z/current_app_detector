@@ -9,6 +9,6 @@
 - Added `getUsagePermission()` method to ask for Usage Permission
 
 
-## 1.0.2
-- Third release
-- Added `checkUsagePermission` method to check for Usage Permission
+## 1.0.3
+- Fouth release
+- Added `launchApp` method to launch other Applications
