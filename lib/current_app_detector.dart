@@ -31,6 +31,24 @@ class CurrentAppDetector {
     }
   }
 
+
+  /// Launches an app by its package name (if installed)
+static Future<bool> launchApp(String packageName) async {
+  try {
+    final result = await _channel.invokeMethod<bool>(
+      'launchApp',
+      {'packageName': packageName},
+    );
+    return result ?? false;
+  } on PlatformException catch (e) {
+    if (e.code == 'APP_NOT_FOUND') {
+      throw Exception('App not found: ${e.message}');
+    } else {
+      throw Exception('Failed to launch app: ${e.message}');
+    }
+  }
+}
+
   /// Request usage stats permission
   static Future<String> getUsagePermission() async {
     try {

@@ -33,6 +33,14 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             "getCurrentApp" -> getCurrentApp(result)
             "getUsagePermission" -> getUsagePermission(result)
             "checkUsagePermission" -> hasUsageStatsPermission(result)
+             "launchApp" -> {
+            val packageName = call.argument<String>("packageName")
+            if (packageName != null) {
+                launchApp(packageName, result)
+            } else {
+                result.error("INVALID_ARGUMENT", "Package name is required", null)
+            }
+        }
             else -> result.notImplemented()
         }
     }
@@ -48,6 +56,22 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             result.error("GO_HOME_ERROR", "Failed to go home: ${e.message}", null)
         }
     }
+
+    private fun launchApp(packageName: String, result: Result) {
+    try {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(launchIntent)
+            result.success(true)
+        } else {
+            result.error("APP_NOT_FOUND", "No app found with package: $packageName", null)
+        }
+    } catch (e: Exception) {
+        result.error("LAUNCH_ERROR", "Failed to launch app: ${e.message}", null)
+    }
+}
+
 
     private fun getUsagePermission(result: Result) {
         try {
