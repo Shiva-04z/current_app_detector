@@ -25,3 +25,6 @@
     - checkAccessibilityPermission() to verify if the service is enabled.
 - Added getScreenText() method to read all visible text content from the screen using the Accessibility Service.
 
+## 1.0.5
+- Sixth release
+- Fixing the v1.0.4
