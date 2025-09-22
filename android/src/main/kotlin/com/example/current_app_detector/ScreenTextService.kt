@@ -3,6 +3,8 @@ import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.text.TextUtils
+import android.accessibilityservice.AccessibilityServiceInfo
+
 
 
 class ScreenTextService : AccessibilityService() {
@@ -47,13 +49,20 @@ class ScreenTextService : AccessibilityService() {
         }
     }
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        instance = this
-        // Configure the service
-      
-        this.serviceInfo = info
+   override fun onServiceConnected() {
+    super.onServiceConnected()
+    instance = this
+
+    // Optional: configure service info
+    val serviceInfo = serviceInfo.apply {
+        eventTypes = AccessibilityEvent.TYPES_ALL_MASK
+        feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+        flags = AccessibilityServiceInfo.DEFAULT
+        notificationTimeout = 100
     }
+    this.serviceInfo = serviceInfo
+}
+
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // This service fetches text on demand via the static method,
