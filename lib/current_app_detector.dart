@@ -1,7 +1,5 @@
 import 'package:flutter/services.dart';
 
-import 'package:flutter/services.dart';
-
 /// A class to interact with native platform functionality for detecting 
 /// the current foreground application and interacting with system features.
 class CurrentAppDetector {

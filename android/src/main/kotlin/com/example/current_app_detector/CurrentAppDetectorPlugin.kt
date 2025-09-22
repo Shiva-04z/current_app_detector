@@ -1,6 +1,6 @@
 package com.example.current_app_detector
 
-import ScreenTextService;
+import com.example.current_app_detector.ScreenTextService
 import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
