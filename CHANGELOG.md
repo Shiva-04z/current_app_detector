@@ -13,6 +13,15 @@
 - Third release
 - Added `checkUsagePermission` method to check for Usage Permission
 
+
 ## 1.0.3
-- Fouth release
-- Added `launchApp` method to launch app
+- Fourth release
+- Added launchApp() method to launch an app by its package name
+
+## 1.0.4
+- Fifth release
+- Added methods for Accessibility Service permission:
+    - getAccessibilityPermission() to request permission from the user.
+    - checkAccessibilityPermission() to verify if the service is enabled.
+- Added getScreenText() method to read all visible text content from the screen using the Accessibility Service.
+

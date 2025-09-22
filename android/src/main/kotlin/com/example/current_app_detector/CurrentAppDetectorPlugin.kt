@@ -1,5 +1,6 @@
 package com.example.current_app_detector
 
+import ScreenTextService;
 import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
@@ -33,7 +34,10 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             "getCurrentApp" -> getCurrentApp(result)
             "getUsagePermission" -> getUsagePermission(result)
             "checkUsagePermission" -> hasUsageStatsPermission(result)
-             "launchApp" -> {
+            "getAccessibilityPermission" -> getAccessibilityPermission(result)
+            "checkAccessibilityPermission" -> checkAccessibilityPermission(result)
+            "getScreenText" -> getScreenText(result)
+            "launchApp" -> {
             val packageName = call.argument<String>("packageName")
             if (packageName != null) {
                 launchApp(packageName, result)
@@ -54,6 +58,52 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             result.success(true)
         } catch (e: Exception) {
             result.error("GO_HOME_ERROR", "Failed to go home: ${e.message}", null)
+        }
+    }
+
+     private fun getAccessibilityPermission(result: Result) {
+        try {
+            if (isAccessibilityServiceEnabled()) {
+                result.success("granted")
+            } else {
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+                result.success("need_permission")
+            }
+        } catch (e: Exception) {
+            result.error("ACCESSIBILITY_PERMISSION_ERROR", "Failed to open accessibility settings: ${e.message}", null)
+        }
+    }
+
+
+      private fun checkAccessibilityPermission(result: Result) {
+        try {
+            result.success(isAccessibilityServiceEnabled())
+        } catch (e: Exception) {
+            result.error("ACCESSIBILITY_CHECK_ERROR", "Failed to check accessibility permission: ${e.message}", null)
+        }
+    }
+
+    /**
+     * A helper function to determine if the accessibility service is enabled.
+     */
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val serviceId = "${context.packageName}/${ScreenTextService::class.java.canonicalName}"
+        val enabledServices = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+        return enabledServices?.contains(serviceId, ignoreCase = false) ?: false
+    }
+
+     private fun getScreenText(result: Result) {
+        if (!isAccessibilityServiceEnabled()) {
+            result.error("PERMISSION_DENIED", "Accessibility permission is not enabled.", null)
+            return
+        }
+        try {
+            val text = ScreenTextService.getScreenTextCombined()
+            result.success(text)
+        } catch(e: Exception) {
+             result.error("GET_SCREEN_TEXT_ERROR", "Failed to get screen text: ${e.message}", null)
         }
     }
 
@@ -145,3 +195,5 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 }
+
+
