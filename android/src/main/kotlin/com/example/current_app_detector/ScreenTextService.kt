@@ -47,6 +47,10 @@ class ScreenTextService : AccessibilityService() {
                 child?.recycle() // Recycle child node after use
             }
         }
+
+        fun performGlobalAction(action: Int): Boolean {
+        return instance?.performGlobalActionInternal(action) ?: false
+    }
     }
 
    override fun onServiceConnected() {
@@ -68,6 +72,23 @@ class ScreenTextService : AccessibilityService() {
         // This service fetches text on demand via the static method,
         // so we don't need to process events here continuously.
     }
+
+     
+
+
+    /**
+     * Internal method to perform global actions
+     */
+    private fun performGlobalActionInternal(action: Int): Boolean {
+        return try {
+            // Call the parent class method to perform the actual global action
+            super.performGlobalAction(action)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
 
     override fun onInterrupt() {
         // Called when the service is interrupted.

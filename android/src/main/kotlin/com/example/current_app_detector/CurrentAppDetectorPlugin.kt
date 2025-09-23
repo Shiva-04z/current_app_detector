@@ -1,6 +1,7 @@
 package com.example.current_app_detector
 
 import com.example.current_app_detector.ScreenTextService
+import android.accessibilityservice.AccessibilityService
 import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
@@ -37,6 +38,7 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
             "getAccessibilityPermission" -> getAccessibilityPermission(result)
             "checkAccessibilityPermission" -> checkAccessibilityPermission(result)
             "getScreenText" -> getScreenText(result)
+            "getBack"-> getBack(result)
             "launchApp" -> {
             val packageName = call.argument<String>("packageName")
             if (packageName != null) {
@@ -119,6 +121,23 @@ class CurrentAppDetectorPlugin : FlutterPlugin, MethodCallHandler {
         }
     } catch (e: Exception) {
         result.error("LAUNCH_ERROR", "Failed to launch app: ${e.message}", null)
+    }
+}
+
+
+private fun getBack(result : Result)
+{
+    try {
+            if (!isAccessibilityServiceEnabled()) {
+                result.error("PERMISSION_DENIED", "Accessibility permission is not enabled.", null)
+                return}
+                 ScreenTextService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+            result.success(true)
+    }
+    catch(e: Exception)
+    {
+        result.error("ERROR", "Failed to handle request: ${e.message}", null)
+         
     }
 }
 

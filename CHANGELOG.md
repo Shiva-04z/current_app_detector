@@ -28,3 +28,9 @@
 ## 1.0.5
 - Sixth release
 - Fixing the v1.0.4
+
+
+## 1.0.6
+- Seventh Release
+- Bug Fixes
+- Added getBack(), System level trigger with Accessibility permission

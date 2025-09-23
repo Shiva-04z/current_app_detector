@@ -16,6 +16,22 @@ class CurrentAppDetector {
     }
   }
 
+
+
+  static Future<bool> getBack() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('getBack');
+      return result ?? false;
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        throw Exception(
+            'Accessibility permission is not enabled. Please grant permission first.');
+      } else {
+        throw Exception('Failed to perform back action: ${e.message}');
+      }
+    }
+  }
+
   /// Gets the package name of the current foreground app.
   /// Requires Usage Stats permission on Android.
   /// Returns the package name as a [String].

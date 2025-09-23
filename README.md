@@ -49,6 +49,16 @@ For help getting started with Flutter development, view the
   - `checkAccessibilityPermission()`
 - Added `getScreenText()` method
 
+### 1.0.5
+- Added Accessibility Service methods:
+  - Fixed Bugs of v1.0.4
+  
+
+### 1.0.6
+- Added Accessibility Service methods:
+  - `getBack()`
+
+
 ## Installation
 
 Add the dependency to your `pubspec.yaml`:
@@ -63,17 +73,17 @@ dependencies:
 To use Accessibility Service and screen text reading, add the following to your `AndroidManifest.xml`:
 
 ```xml
-<service
-    android:name=".ScreenTextService"
-    android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="android.accessibilityservice.AccessibilityService" />
-    </intent-filter>
-    <meta-data
-        android:name="android.accessibilityservice"
-        android:resource="@xml/accessibility_service_config" />
-</service>
+ <service
+        android:name="com.example.current_app_detector.ScreenTextService"
+        android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="android.accessibilityservice.AccessibilityService" />
+        </intent-filter>
+        <meta-data
+            android:name="android.accessibilityservice"
+            android:resource="@xml/accessibility_service_config" />
+    </service>
 ```
 
 Also, ensure you have proper permissions in `AndroidManifest.xml`:
@@ -95,6 +105,11 @@ void main() async {
   // Go to home screen
   await CurrentAppDetector.goHome();
 
+
+   // Go Back
+  await CurrentAppDetector.goBack();
+
+
   // Request usage permission
   await CurrentAppDetector.getUsagePermission();
 
@@ -110,6 +125,7 @@ void main() async {
 
   // Read screen text
   String screenText = await CurrentAppDetector.getScreenText();
+
 }
 ```
 
@@ -117,6 +133,16 @@ void main() async {
 
 * Some methods require **special permissions**: Usage Access and Accessibility Service.
 * Works **only on Android devices**.
-* Make sure your `accessibility_service_config.xml` is correctly defined in `res/xml/`.
+* Make sure your `accessibility_service_config.xml` is correctly defined in `res/xml/`:
 
+```xml
+ <?xml version="1.0" encoding="utf-8"?>
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagIncludeNotImportantViews|flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="100"
+   />
+```
 
